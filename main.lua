@@ -139,10 +139,11 @@ local function makeDraggable(frame, header)
 	local dragging = false
 	local dragStart
 	local startPos
-	local dragInput
 
 	header.Active = true
 	header.Selectable = true
+	header.ZIndex = 10
+	frame.ZIndex = 10
 
 	header.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -151,12 +152,12 @@ local function makeDraggable(frame, header)
 			dragging = true
 			dragStart = input.Position
 			startPos = frame.Position
-			dragInput = input
 		end
 	end)
 
 	header.InputEnded:Connect(function(input)
-		if input == dragInput then
+		if input.UserInputType == Enum.UserInputType.MouseButton1
+			or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = false
 		end
 	end)
@@ -381,7 +382,9 @@ button.MouseButton1Click:Connect(function()
 	blur.Size = isOpen and 10 or 0
 
 	for _, tf in ipairs(tabFrames) do
-		tf.Frame.Visible = false -- hides all tab frames
+		tf.Frame.Visible = false
+		tf.Content.Visible = false
+		tf.Toggle.BackgroundColor3 = Color3.fromRGB(100,100,100)
 	end
 end)
 
