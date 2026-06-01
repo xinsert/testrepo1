@@ -8,6 +8,7 @@ local isOpen = false
 
 local settingsOpen = false
 local savedTabs = {}
+local miscItems = {} -- track misc buttons + header
 
 -- blur
 local Lighting = game:GetService("Lighting")
@@ -137,6 +138,7 @@ miscHeader.Size = UDim2.new(1, 0, 0, 30)
 miscHeader.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
 miscHeader.BorderSizePixel = 0
 miscHeader.Parent = sidebar
+table.insert(miscItems, miscHeader)
 
 local miscCorner = Instance.new("UICorner")
 miscCorner.CornerRadius = UDim.new(0, 6)
@@ -156,24 +158,27 @@ miscText.Parent = miscHeader
 
 -- MISC BUTTON CREATOR
 local function createMiscButton(name, callback)
-	local b = Instance.new("TextButton")
+    local b = Instance.new("TextButton")
 
-	b.Size = UDim2.new(1, -30, 0, 24)
-	b.BackgroundTransparency = 1
+    b.Size = UDim2.new(1, -30, 0, 24)
+    b.BackgroundTransparency = 1
 
-	b.Text = name
-	b.TextColor3 = Color3.fromRGB(255, 255, 255)
-	b.TextSize = 14
-	b.Font = Enum.Font.Gotham
-	b.TextXAlignment = Enum.TextXAlignment.Left
+    b.Text = name
+    b.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b.TextSize = 14
+    b.Font = Enum.Font.Gotham
+    b.TextXAlignment = Enum.TextXAlignment.Left
 
-	b.Parent = sidebar
+    b.Parent = sidebar
 
-	if callback then
-		b.MouseButton1Click:Connect(callback)
-	end
+    -- ✅ add this line so it hides with settings
+    table.insert(miscItems, b)
 
-	return b
+    if callback then
+        b.MouseButton1Click:Connect(callback)
+    end
+
+    return b
 end
 
 -- SELF DESTRUCT
