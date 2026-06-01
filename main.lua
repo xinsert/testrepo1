@@ -77,9 +77,13 @@ title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = topbar
 
 -- SETTINGS ICON (RIGHT)
-local settings = Instance.new("TextLabel")
+local settings = Instance.new("TextButton")
+
 settings.Size = UDim2.new(0, 30, 1, 0)
 settings.Position = UDim2.new(1, -35, 0, 0)
+
+settings.BackgroundTransparency = 1
+settings.AutoButtonColor = false
 
 settings.BackgroundTransparency = 1
 settings.Text = "S"
@@ -218,13 +222,11 @@ local function closeSettings()
 	end
 end
 
-settings.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		if settingsOpen then
-			closeSettings()
-		else
-			openSettings()
-		end
+settings.MouseButton1Click:Connect(function()
+	if settingsOpen then
+		closeSettings()
+	else
+		openSettings()
 	end
 end)
 
