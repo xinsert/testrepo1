@@ -253,9 +253,13 @@ end)
 --DRAGGABILITY
 local UIS = game:GetService("UserInputService")
 
+topbar.Active = true
+topbar.Selectable = true
+
 local dragging = false
 local dragStart
 local startPos
+local dragInput
 
 topbar.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -264,30 +268,27 @@ topbar.InputBegan:Connect(function(input)
 		dragging = true
 		dragStart = input.Position
 		startPos = main.Position
+		dragInput = input
 	end
 end)
 
 topbar.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1
-		or input.UserInputType == Enum.UserInputType.Touch then
-
+	if input == dragInput then
 		dragging = false
 	end
 end)
 
 UIS.InputChanged:Connect(function(input)
-	if dragging then
-		if input.UserInputType == Enum.UserInputType.MouseMovement
-			or input.UserInputType == Enum.UserInputType.Touch then
+	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch) then
 
-			local delta = input.Position - dragStart
+		local delta = input.Position - dragStart
 
-			main.Position = UDim2.new(
-				startPos.X.Scale,
-				startPos.X.Offset + delta.X,
-				startPos.Y.Scale,
-				startPos.Y.Offset + delta.Y
-			)
-		end
+		main.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
 	end
 end)
