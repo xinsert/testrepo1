@@ -107,13 +107,16 @@ list.SortOrder = Enum.SortOrder.LayoutOrder
 list.Parent = sidebar
 
 -- BUTTON CREATOR
+local tabButtons = {}
+
 local function createTab(name)
 	local b = Instance.new("TextButton")
+
 	b.Size = UDim2.new(1, -30, 0, 24)
 	b.BackgroundTransparency = 1
 
 	b.Text = name
-	b.TextColor3 = Color3.fromRGB(255, 255, 255)
+	b.TextColor3 = Color3.fromRGB(255,255,255)
 	b.TextSize = 14
 	b.Font = Enum.Font.Gotham
 	b.TextXAlignment = Enum.TextXAlignment.Left
@@ -121,7 +124,70 @@ local function createTab(name)
 	b.Parent = sidebar
 
 	table.insert(savedTabs, b)
+
+	tabButtons[name] = b
+
+	return b
 end
+
+-- CREATE TAB FRAME
+
+local function CreateTabFrame(name)
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(0, 180, 0, 200)
+	frame.Position = UDim2.new(0, 220, 0, 80)
+	frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	frame.Visible = true
+	frame.Parent = gui
+
+	local header = Instance.new("Frame")
+	header.Size = UDim2.new(1, 0, 0, 30)
+	header.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	header.Parent = frame
+
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(1, -30, 1, 0)
+	title.Position = UDim2.new(0, 10, 0, 0)
+	title.BackgroundTransparency = 1
+	title.Text = name
+	title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 16
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.Parent = header
+
+	local toggle = Instance.new("TextButton")
+	toggle.Size = UDim2.new(0, 20, 0, 20)
+	toggle.Position = UDim2.new(1, -25, 0, 5)
+	toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	toggle.Text = ""
+	toggle.Parent = header
+
+	local content = Instance.new("Frame")
+	content.Size = UDim2.new(1, 0, 1, -30)
+	content.Position = UDim2.new(0, 0, 0, 30)
+	content.BackgroundTransparency = 1
+	content.Parent = frame
+
+	-- toggle behavior
+	toggle.MouseButton1Click:Connect(function()
+		content.Visible = not content.Visible
+		toggle.BackgroundColor3 = content.Visible and Color3.fromRGB(255,255,255) or Color3.fromRGB(100,100,100)
+	end)
+
+	return {
+		Frame = frame,
+		Header = header,
+		Content = content,
+		Toggle = toggle
+	}
+end
+
+local CombatFrame = CreateTabFrame("Combat")
+
+tabButtons["Combat"].MouseButton1Click:Connect(function()
+	CombatFrame.Frame.Visible = not CombatFrame.Frame.Visible
+end)
 
 -- TABS
 createTab("Combat")
