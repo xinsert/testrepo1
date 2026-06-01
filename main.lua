@@ -229,10 +229,11 @@ makeDraggable(frame, header)
 
 -- collect tab frame for global access
 local tabData = {
-    Frame = frame,
-    Header = header,
-    Content = content,
-    Toggle = toggle
+	Name = name,
+	Frame = frame,
+	Header = header,
+	Content = content,
+	Toggle = toggle
 }
 table.insert(tabFrames, tabData)
 
@@ -249,14 +250,15 @@ createTab("Automatic")
 createTab("Other")
 
 for name, button in pairs(tabButtons) do
+	local tabName = name
+
 	button.MouseButton1Click:Connect(function()
 		for _, tf in ipairs(tabFrames) do
-			tf.Frame.Visible = false -- hide all tabs first
+			tf.Frame.Visible = false
 		end
 
-		-- find the tab frame that matches the button name
 		for _, tf in ipairs(tabFrames) do
-			if tf.Header:FindFirstChildWhichIsA("TextLabel").Text == name then
+			if tf.Header:FindFirstChildWhichIsA("TextLabel").Text == tabName then
 				tf.Frame.Visible = true
 				break
 			end
