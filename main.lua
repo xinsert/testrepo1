@@ -134,10 +134,10 @@ end
 
 local function CreateTabFrame(name)
 	local frame = Instance.new("Frame")
-	frame.Size = UDim2.new(0, 180, 0, 200)
+	frame.Size = UDim2.new(0, 180, 0, 30) -- only header height
 	frame.Position = UDim2.new(0, 220, 0, 80)
 	frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	frame.Visible = true
+	frame.Visible = false -- start hidden
 	frame.Parent = gui
 
 	local header = Instance.new("Frame")
@@ -164,10 +164,11 @@ local function CreateTabFrame(name)
 	toggle.Parent = header
 
 	local content = Instance.new("Frame")
-	content.Size = UDim2.new(1, 0, 1, -30)
+	content.Size = UDim2.new(1, 0, 0, 0) -- empty, height 0
 	content.Position = UDim2.new(0, 0, 0, 30)
 	content.BackgroundTransparency = 1
 	content.Parent = frame
+	content.Visible = false
 
 	-- toggle behavior
 	toggle.MouseButton1Click:Connect(function()
@@ -183,12 +184,6 @@ local function CreateTabFrame(name)
 	}
 end
 
-local CombatFrame = CreateTabFrame("Combat")
-
-tabButtons["Combat"].MouseButton1Click:Connect(function()
-	CombatFrame.Frame.Visible = not CombatFrame.Frame.Visible
-end)
-
 -- TABS
 createTab("Combat")
 createTab("Blatant")
@@ -197,6 +192,12 @@ createTab("Render")
 createTab("Inventory")
 createTab("Automatic")
 createTab("Other")
+
+local CombatFrame = CreateTabFrame("Combat")
+
+tabButtons["Combat"].MouseButton1Click:Connect(function()
+	CombatFrame.Frame.Visible = not CombatFrame.Frame.Visible
+end)
 
 -- SEPARATOR HEADER
 local miscHeader = Instance.new("Frame")
