@@ -139,11 +139,10 @@ local function makeDraggable(frame, header)
 	local dragging = false
 	local dragStart
 	local startPos
+	local dragInput
 
 	header.Active = true
 	header.Selectable = true
-	header.ZIndex = 10
-	frame.ZIndex = 10
 
 	header.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -152,12 +151,12 @@ local function makeDraggable(frame, header)
 			dragging = true
 			dragStart = input.Position
 			startPos = frame.Position
+			dragInput = input
 		end
 	end)
 
 	header.InputEnded:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1
-			or input.UserInputType == Enum.UserInputType.Touch then
+		if input == dragInput then
 			dragging = false
 		end
 	end)
@@ -229,18 +228,17 @@ makeDraggable(frame, header)
 
 -- collect tab frame for global access
 local tabData = {
-	Name = name,
-	Frame = frame,
-	Header = header,
-	Content = content,
-	Toggle = toggle
+    Frame = frame,
+    Header = header,
+    Content = content,
+    Toggle = toggle
 }
 table.insert(tabFrames, tabData)
 
 	return tabData
 end
 
--- TABS (buttons)
+-- TABS
 createTab("Combat")
 createTab("Blatant")
 createTab("World")
@@ -249,21 +247,18 @@ createTab("Inventory")
 createTab("Automatic")
 createTab("Other")
 
--- TAB FRAMES (actual draggable frames)
-CreateTabFrame("Combat")
-CreateTabFrame("Blatant")
-CreateTabFrame("World")
-CreateTabFrame("Render")
-CreateTabFrame("Inventory")
-CreateTabFrame("Automatic")
-CreateTabFrame("Other")
-
 for name, button in pairs(tabButtons) do
-	local tabName = name
-
 	button.MouseButton1Click:Connect(function()
 		for _, tf in ipairs(tabFrames) do
-			tf.Frame.Visible = (tf.Name == tabName)  -- <--- clean fix
+			tf.Frame.Visible = false -- hide all tabs first
+		end
+
+		-- find the tab frame that matches the button name
+		for _, tf in ipairs(tabFrames) do
+			if tf.Header:FindFirstChildWhichIsA("TextLabel").Text == name then
+				tf.Frame.Visible = true
+				break
+			end
 		end
 	end)
 end
@@ -386,9 +381,7 @@ button.MouseButton1Click:Connect(function()
 	blur.Size = isOpen and 10 or 0
 
 	for _, tf in ipairs(tabFrames) do
-		tf.Frame.Visible = false
-		tf.Content.Visible = false
-		tf.Toggle.BackgroundColor3 = Color3.fromRGB(100,100,100)
+		tf.Frame.Visible = false -- hides all tab frames
 	end
 end)
 
