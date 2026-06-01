@@ -9,7 +9,6 @@ local isOpen = false
 local settingsOpen = false
 local savedTabs = {}
 local miscItems = {} -- track misc buttons + header
-local tabFrames = {} -- every tab frame will be added here
 
 -- blur
 local Lighting = game:GetService("Lighting")
@@ -131,52 +130,6 @@ local function createTab(name)
 	return b
 end
 
--- DRAG
-
-local UIS = game:GetService("UserInputService")
-
-local function makeDraggable(frame, header)
-	local dragging = false
-	local dragStart
-	local startPos
-	local dragInput
-
-	header.Active = true
-	header.Selectable = true
-
-	header.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1
-			or input.UserInputType == Enum.UserInputType.Touch then
-
-			dragging = true
-			dragStart = input.Position
-			startPos = frame.Position
-			dragInput = input
-		end
-	end)
-
-	header.InputEnded:Connect(function(input)
-		if input == dragInput then
-			dragging = false
-		end
-	end)
-
-	UIS.InputChanged:Connect(function(input)
-		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
-			or input.UserInputType == Enum.UserInputType.Touch) then
-
-			local delta = input.Position - dragStart
-
-			frame.Position = UDim2.new(
-				startPos.X.Scale,
-				startPos.X.Offset + delta.X,
-				startPos.Y.Scale,
-				startPos.Y.Offset + delta.Y
-			)
-		end
-	end)
-end
-
 -- CREATE TAB FRAME
 
 local function CreateTabFrame(name)
@@ -216,26 +169,19 @@ local function CreateTabFrame(name)
 	content.BackgroundTransparency = 1
 	content.Parent = frame
 	content.Visible = false
-	
+
 	-- toggle behavior
 	toggle.MouseButton1Click:Connect(function()
 		content.Visible = not content.Visible
 		toggle.BackgroundColor3 = content.Visible and Color3.fromRGB(255,255,255) or Color3.fromRGB(100,100,100)
 	end)
 
--- make draggable
-makeDraggable(frame, header)
-
--- collect tab frame for global access
-local tabData = {
-    Frame = frame,
-    Header = header,
-    Content = content,
-    Toggle = toggle
-}
-table.insert(tabFrames, tabData)
-
-	return tabData
+	return {
+		Frame = frame,
+		Header = header,
+		Content = content,
+		Toggle = toggle
+	}
 end
 
 -- TABS
@@ -247,21 +193,11 @@ createTab("Inventory")
 createTab("Automatic")
 createTab("Other")
 
-for name, button in pairs(tabButtons) do
-	button.MouseButton1Click:Connect(function()
-		for _, tf in ipairs(tabFrames) do
-			tf.Frame.Visible = false -- hide all tabs first
-		end
+local CombatFrame = CreateTabFrame("Combat")
 
-		-- find the tab frame that matches the button name
-		for _, tf in ipairs(tabFrames) do
-			if tf.Header:FindFirstChildWhichIsA("TextLabel").Text == name then
-				tf.Frame.Visible = true
-				break
-			end
-		end
-	end)
-end
+tabButtons["Combat"].MouseButton1Click:Connect(function()
+	CombatFrame.Frame.Visible = not CombatFrame.Frame.Visible
+end)
 
 -- SEPARATOR HEADER
 local miscHeader = Instance.new("Frame")
@@ -379,13 +315,10 @@ button.MouseButton1Click:Connect(function()
 	isOpen = not isOpen
 	main.Visible = isOpen
 	blur.Size = isOpen and 10 or 0
-
-	for _, tf in ipairs(tabFrames) do
-		tf.Frame.Visible = false -- hides all tab frames
-	end
 end)
 
 --DRAGGABILITY
+local UIS = game:GetService("UserInputService")
 
 topbar.Active = true
 topbar.Selectable = true
