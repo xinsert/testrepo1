@@ -240,7 +240,7 @@ table.insert(tabFrames, tabData)
 	return tabData
 end
 
--- TABS
+-- TABS (buttons)
 createTab("Combat")
 createTab("Blatant")
 createTab("World")
@@ -249,19 +249,21 @@ createTab("Inventory")
 createTab("Automatic")
 createTab("Other")
 
+-- TAB FRAMES (actual draggable frames)
+CreateTabFrame("Combat")
+CreateTabFrame("Blatant")
+CreateTabFrame("World")
+CreateTabFrame("Render")
+CreateTabFrame("Inventory")
+CreateTabFrame("Automatic")
+CreateTabFrame("Other")
+
 for name, button in pairs(tabButtons) do
 	local tabName = name
 
 	button.MouseButton1Click:Connect(function()
 		for _, tf in ipairs(tabFrames) do
-			tf.Frame.Visible = false
-		end
-
-		for _, tf in ipairs(tabFrames) do
-			if tf.Header:FindFirstChildWhichIsA("TextLabel").Text == tabName then
-				tf.Frame.Visible = true
-				break
-			end
+			tf.Frame.Visible = (tf.Name == tabName)  -- <--- clean fix
 		end
 	end)
 end
