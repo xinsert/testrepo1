@@ -216,6 +216,10 @@ local function openSettings()
 	for _, tab in ipairs(savedTabs) do
 		tab.Visible = false
 	end
+
+	for _, item in ipairs(miscItems) do
+		item.Visible = false
+	end
 end
 
 local function closeSettings()
@@ -224,6 +228,10 @@ local function closeSettings()
 
 	for _, tab in ipairs(savedTabs) do
 		tab.Visible = true
+	end
+
+	for _, item in ipairs(miscItems) do
+		item.Visible = true
 	end
 end
 
