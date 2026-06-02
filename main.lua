@@ -211,20 +211,27 @@ for _, tabName in ipairs({
 	CreateTabFrame(tabName)
 end
 
--- UNIVERSAL TAB CLICK LOGIC (fixes toggle + multiple open tabs)
+-- UNIVERSAL TAB CLICK LOGIC
 for name, button in pairs(tabButtons) do
 	button.MouseButton1Click:Connect(function()
 		local tab = tabFramesByName[name]
-		if not tab then return end
+		if not tab then
+			return
+		end
 
-		-- toggle clicked tab only
+		-- toggle this tab only
 		tab.Open = not tab.Open
+
 		tab.Frame.Visible = tab.Open
 		tab.Content.Visible = tab.Open
-		tab.Toggle.BackgroundColor3 = tab.Open and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,180,180)
-	end)
-endend
 
+		if tab.Open then
+			tab.Toggle.BackgroundColor3 = Color3.fromRGB(255,255,255)
+		else
+			tab.Toggle.BackgroundColor3 = Color3.fromRGB(180,180,180)
+		end
+	end)
+end
 -- MISC HEADER
 local miscHeader = Instance.new("Frame")
 miscHeader.Size = UDim2.new(1,0,0,30)
