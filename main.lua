@@ -276,6 +276,20 @@ local function createMiscButton(name, callback)
 	return b
 end
 
+-- SORT GUI BUTTON
+createMiscButton("Sort GUI", function()
+	local startX = 200  -- X offset for the first tab frame
+	local startY = 80   -- Y offset for the first tab frame
+	local spacing = 40  -- vertical space between frames
+
+	for i, tab in ipairs(tabFrames) do
+		tab.Frame.Position = UDim2.new(0, startX, 0, startY + (i-1)*spacing)
+		tab.Frame.Visible = true
+		tab.Content.Visible = tab.Open -- respect toggle state
+		tab.Toggle.BackgroundColor3 = tab.Open and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,180,180)
+	end
+end)
+
 -- SELF DESTRUCT
 local function selfDestruct()
 	if blur then blur:Destroy() end
