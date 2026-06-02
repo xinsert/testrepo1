@@ -9,6 +9,7 @@ local settingsOpen = false
 local savedTabs = {}
 local miscItems = {}
 local tabFrames = {}
+local tabFramesByName = {}
 
 -- blur
 local Lighting = game:GetService("Lighting")
@@ -184,6 +185,7 @@ local function CreateTabFrame(name)
 
 	local tabData = {Name=name,Frame=frame,Toggle=toggle,Content=content,Open=false}
 	table.insert(tabFrames,tabData)
+	tabFramesByName[name] = tabData
 	return tabData
 end
 
@@ -196,13 +198,40 @@ createTab("Inventory")
 createTab("Automatic")
 createTab("Other")
 
-local CombatFrame = CreateTabFrame("Combat")
-tabButtons["Combat"].MouseButton1Click:Connect(function()
-	CombatFrame.Open = not CombatFrame.Open
-	CombatFrame.Frame.Visible = CombatFrame.Open
-	CombatFrame.Content.Visible = CombatFrame.Open
-	CombatFrame.Toggle.BackgroundColor3 = CombatFrame.Open and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,180,180)
-end)
+-- CREATE TAB FRAMES
+for _, tabName in ipairs({
+	"Combat",
+	"Blatant",
+	"World",
+	"Render",
+	"Inventory",
+	"Automatic",
+	"Other"
+}) do
+	CreateTabFrame(tabName)
+end
+
+-- UNIVERSAL TAB CLICK LOGIC
+for name, button in pairs(tabButtons) do
+	button.MouseButton1Click:Connect(function()
+		local tab = tabFramesByName[name]
+		if not tab then return end
+
+		-- close all tabs first
+		for _, tf in ipairs(tabFrames) do
+			tf.Open = false
+			tf.Frame.Visible = false
+			tf.Content.Visible = false
+			tf.Toggle.BackgroundColor3 = Color3.fromRGB(180,180,180)
+		end
+
+		-- toggle clicked tab
+		tab.Open = not tab.Open
+		tab.Frame.Visible = tab.Open
+		tab.Content.Visible = tab.Open
+		tab.Toggle.BackgroundColor3 = tab.Open and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,180,180)
+	end)
+end
 
 -- MISC HEADER
 local miscHeader = Instance.new("Frame")
