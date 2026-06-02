@@ -211,27 +211,19 @@ for _, tabName in ipairs({
 	CreateTabFrame(tabName)
 end
 
--- UNIVERSAL TAB CLICK LOGIC
+-- UNIVERSAL TAB CLICK LOGIC (fixes toggle + multiple open tabs)
 for name, button in pairs(tabButtons) do
 	button.MouseButton1Click:Connect(function()
 		local tab = tabFramesByName[name]
 		if not tab then return end
 
-		-- close all tabs first
-		for _, tf in ipairs(tabFrames) do
-			tf.Open = false
-			tf.Frame.Visible = false
-			tf.Content.Visible = false
-			tf.Toggle.BackgroundColor3 = Color3.fromRGB(180,180,180)
-		end
-
-		-- toggle clicked tab
+		-- toggle clicked tab only
 		tab.Open = not tab.Open
 		tab.Frame.Visible = tab.Open
 		tab.Content.Visible = tab.Open
 		tab.Toggle.BackgroundColor3 = tab.Open and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,180,180)
 	end)
-end
+endend
 
 -- MISC HEADER
 local miscHeader = Instance.new("Frame")
