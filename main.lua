@@ -278,14 +278,14 @@ end
 
 -- SORT GUI BUTTON
 createMiscButton("Sort GUI", function()
-	local startX = 200  -- X offset for the first tab frame
-	local startY = 80   -- Y offset for the first tab frame
-	local spacing = 40  -- vertical space between frames
+	local startX = 220
+	local startY = 80
+	local spacing = 200 -- horizontal spacing
 
 	for i, tab in ipairs(tabFrames) do
-		tab.Frame.Position = UDim2.new(0, startX, 0, startY + (i-1)*spacing)
+		tab.Frame.Position = UDim2.new(0, startX + (i-1)*spacing, 0, startY)
 		tab.Frame.Visible = true
-		tab.Content.Visible = tab.Open -- respect toggle state
+		tab.Content.Visible = tab.Open
 		tab.Toggle.BackgroundColor3 = tab.Open and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,180,180)
 	end
 end)
@@ -348,12 +348,12 @@ button.MouseButton1Click:Connect(function()
 	blur.Size = isOpen and 10 or 0
 
 	if not isOpen then
-		-- close combat tab too
-		if CombatFrame then
-			CombatFrame.Open = false
-			CombatFrame.Frame.Visible = false
-			CombatFrame.Content.Visible = false
-			CombatFrame.Toggle.BackgroundColor3 = Color3.fromRGB(180,180,180)
+	-- close all tab frames
+		for _, tab in ipairs(tabFrames) do
+			tab.Open = false
+			tab.Frame.Visible = false
+			tab.Content.Visible = false
+			tab.Toggle.BackgroundColor3 = Color3.fromRGB(180,180,180)
 		end
 	end
 end)
