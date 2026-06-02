@@ -281,7 +281,7 @@ createMiscButton("Sort GUI", function()
 	local startX = 220
 	local startY = 80
 	local spacing = 200
-	local rowSpacing = 40 -- vertical spacing for next row
+	local rowSpacing = 300 -- vertical spacing for next row
 	local maxPerRow = 5   -- put 5 tabs per row
 
 	for i, tab in ipairs(tabFrames) do
@@ -351,7 +351,19 @@ button.MouseButton1Click:Connect(function()
 	main.Visible = isOpen
 	blur.Size = isOpen and 10 or 0
 
-	if not isOpen then
+	if isOpen then
+		-- restore tabs exactly how they were
+		for _, tab in ipairs(tabFrames) do
+			tab.Frame.Visible = tab.Open
+			tab.Content.Visible = tab.Open
+
+			tab.Toggle.BackgroundColor3 =
+				tab.Open
+				and Color3.fromRGB(255,255,255)
+				or Color3.fromRGB(180,180,180)
+		end
+	else
+		-- temporarily hide everything
 		for _, tab in ipairs(tabFrames) do
 			tab.Frame.Visible = false
 			tab.Content.Visible = false
