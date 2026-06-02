@@ -280,10 +280,14 @@ end
 createMiscButton("Sort GUI", function()
 	local startX = 220
 	local startY = 80
-	local spacing = 200 -- horizontal spacing
+	local spacing = 200
+	local rowSpacing = 40 -- vertical spacing for next row
+	local maxPerRow = 5   -- put 5 tabs per row
 
 	for i, tab in ipairs(tabFrames) do
-		tab.Frame.Position = UDim2.new(0, startX + (i-1)*spacing, 0, startY)
+		local row = math.floor((i-1)/maxPerRow)
+		local col = (i-1) % maxPerRow
+		tab.Frame.Position = UDim2.new(0, startX + col*spacing, 0, startY + row*rowSpacing)
 		tab.Frame.Visible = true
 		tab.Content.Visible = tab.Open
 		tab.Toggle.BackgroundColor3 = tab.Open and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,180,180)
@@ -348,12 +352,9 @@ button.MouseButton1Click:Connect(function()
 	blur.Size = isOpen and 10 or 0
 
 	if not isOpen then
-	-- close all tab frames
 		for _, tab in ipairs(tabFrames) do
-			tab.Open = false
 			tab.Frame.Visible = false
 			tab.Content.Visible = false
-			tab.Toggle.BackgroundColor3 = Color3.fromRGB(180,180,180)
 		end
 	end
 end)
