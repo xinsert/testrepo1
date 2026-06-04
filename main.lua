@@ -115,6 +115,8 @@ end
 
 -- TAB FRAME CREATOR
 local function CreateTabFrame(name)
+	local expanded = false
+	
 	local frame = Instance.new("Frame")
 	frame.Size = UDim2.new(0,180,0,30)
 	frame.Position = UDim2.new(0,220,0,80)
@@ -152,10 +154,39 @@ local function CreateTabFrame(name)
 	content.Visible = false
 	content.Parent = frame
 
+	local contentList = Instance.new("UIListLayout")
+	contentList.Padding = UDim.new(0,2)
+	contentList.SortOrder = Enum.SortOrder.LayoutOrder
+	contentList.Parent = content
+
+	local contentList = Instance.new("UIListLayout")
+	contentList.Padding = UDim.new(0,2)
+	contentList.SortOrder = Enum.SortOrder.LayoutOrder
+	contentList.Parent = content
+
+	contentList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		content.Size = UDim2.new(
+			1,
+			0,
+			0,
+			contentList.AbsoluteContentSize.Y
+		)
+
+		frame.Size = UDim2.new(
+			0,
+			180,
+			0,
+			30 + contentList.AbsoluteContentSize.Y
+		)
+	end)
+
 	toggle.MouseButton1Click:Connect(function()
-		isOpen = not isOpen
-		content.Visible = isOpen
-		toggle.BackgroundColor3 = isOpen and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,180,180)
+		expanded = not expanded
+		content.Visible = expanded
+
+		toggle.BackgroundColor3 =
+			expanded and Color3.fromRGB(255,255,255)
+			or Color3.fromRGB(180,180,180)
 	end)
 
 	-- draggable header
@@ -449,11 +480,13 @@ local function CreateModule(data)
 		Callback = data.Callback or function() end
 	}
 
-	local row = Instance.new("Frame")
+	local row = Instance.new("TextButton")
+	row.Text = ""
+	row.AutoButtonColor = false
 	row.Size = UDim2.new(1, 0, 0, 28)
 	row.BackgroundColor3 = Color3.fromRGB(25,25,25)
 	row.BorderSizePixel = 0
-	row.Parent = moduleContainer
+	row.Parent = tab.Content
 
 	local line = Instance.new("Frame")
 	line.Size = UDim2.new(1, 0, 0, 1)
@@ -474,13 +507,26 @@ local function CreateModule(data)
 	label.Parent = row
 
 	-- toggle button
-	local toggle = Instance.new("TextButton")
 	toggle.Size = UDim2.new(0, 40, 0, 20)
 	toggle.Position = UDim2.new(1, -45, 0.5, -10)
 	toggle.BackgroundColor3 = Color3.fromRGB(180,180,180)
 	toggle.Text = ""
 	toggle.Parent = row
 
+	local settingsButton = Instance.new("TextButton")
+	settingsButton.Size = UDim2.new(0,18,0,18)
+	settingsButton.Position = UDim2.new(1,-92,0.5,-9)
+	settingsButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
+	settingsButton.Text = "S"
+	settingsButton.TextColor3 = Color3.fromRGB(255,255,255)
+	settingsButton.Font = Enum.Font.GothamBold
+	settingsButton.TextSize = 12
+	settingsButton.Parent = row
+
+	settingsButton.MouseButton1Click:Connect(function()
+		print(module.Name .. " settings") -- settings menu placeholder
+	end)
+	
 	-- info button
 	local info = Instance.new("TextButton")
 	info.Size = UDim2.new(0, 18, 0, 18)
@@ -547,7 +593,7 @@ local function CreateModule(data)
 		end
 	end
 
-	toggle.MouseButton1Click:Connect(update)
+	row.MouseButton1Click:Connect(update)
 
 	-- tooltip open
 	info.MouseButton1Click:Connect(function()
@@ -590,9 +636,11 @@ end
 -- MODULES
 
 CreateModule({
+	Tab = "Combat",
 	Name = "Test Module",
-	Tooltip = "prints hi in output",
+	Tooltip = "prints hi",
 	Mode = "Button",
+
 	Callback = function()
 		print("hi")
 	end
