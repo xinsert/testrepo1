@@ -300,6 +300,21 @@ local function selfDestruct()
 	isOpen = false
 end
 
+-- MODULES
+
+local modules = {}
+
+local moduleContainer = Instance.new("Frame")
+moduleContainer.Size = UDim2.new(1, -10, 1, -50)
+moduleContainer.Position = UDim2.new(0, 5, 0, 40)
+moduleContainer.BackgroundTransparency = 1
+moduleContainer.Parent = sidebar
+
+local moduleList = Instance.new("UIListLayout")
+moduleList.Padding = UDim.new(0, 2)
+moduleList.SortOrder = Enum.SortOrder.LayoutOrder
+moduleList.Parent = moduleContainer
+
 -- MISC BUTTONS
 createMiscButton("Profiles", function()
 	print("Profiles clicked")
@@ -412,3 +427,173 @@ UIS.InputChanged:Connect(function(input)
 		)
 	end
 end)
+
+
+
+
+
+
+
+
+
+
+
+-- MODULE FUNCTION (CAN BE MOVED LATER)
+
+local function CreateModule(data)
+	local module = {
+		Name = data.Name,
+		Tooltip = data.Tooltip or "No info",
+		Enabled = false,
+		Mode = data.Mode or "Toggle", -- Toggle / Button
+		Callback = data.Callback or function() end
+	}
+
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1, 0, 0, 28)
+	row.BackgroundColor3 = Color3.fromRGB(25,25,25)
+	row.BorderSizePixel = 0
+	row.Parent = moduleContainer
+
+	local line = Instance.new("Frame")
+	line.Size = UDim2.new(1, 0, 0, 1)
+	line.Position = UDim2.new(0, 0, 1, -1)
+	line.BackgroundColor3 = Color3.fromRGB(255,255,255)
+	line.BackgroundTransparency = 0.85
+	line.Parent = row
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -80, 1, 0)
+	label.Position = UDim2.new(0, 8, 0, 0)
+	label.BackgroundTransparency = 1
+	label.Text = module.Name
+	label.TextColor3 = Color3.fromRGB(255,255,255)
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 14
+	label.Parent = row
+
+	-- toggle button
+	local toggle = Instance.new("TextButton")
+	toggle.Size = UDim2.new(0, 40, 0, 20)
+	toggle.Position = UDim2.new(1, -45, 0.5, -10)
+	toggle.BackgroundColor3 = Color3.fromRGB(180,180,180)
+	toggle.Text = ""
+	toggle.Parent = row
+
+	-- info button
+	local info = Instance.new("TextButton")
+	info.Size = UDim2.new(0, 18, 0, 18)
+	info.Position = UDim2.new(1, -70, 0.5, -9)
+	info.BackgroundColor3 = Color3.fromRGB(60,60,60)
+	info.Text = "i"
+	info.TextColor3 = Color3.fromRGB(255,255,255)
+	info.Font = Enum.Font.GothamBold
+	info.TextSize = 12
+	info.Parent = row
+
+	-- tooltip window
+	local tooltipGui = Instance.new("Frame")
+	tooltipGui.Size = UDim2.new(0, 220, 0, 120)
+	tooltipGui.Position = UDim2.new(0.5, -110, 0.5, -60)
+	tooltipGui.BackgroundColor3 = Color3.fromRGB(20,20,20)
+	tooltipGui.Visible = false
+	tooltipGui.Parent = gui
+
+	local tooltipTitle = Instance.new("TextLabel")
+	tooltipTitle.Size = UDim2.new(1, -20, 0, 25)
+	tooltipTitle.Position = UDim2.new(0, 10, 0, 5)
+	tooltipTitle.BackgroundTransparency = 1
+	tooltipTitle.Text = module.Name
+	tooltipTitle.TextColor3 = Color3.fromRGB(255,255,255)
+	tooltipTitle.Font = Enum.Font.GothamBold
+	tooltipTitle.TextSize = 16
+	tooltipTitle.Parent = tooltipGui
+
+	local tooltipText = Instance.new("TextLabel")
+	tooltipText.Size = UDim2.new(1, -20, 1, -40)
+	tooltipText.Position = UDim2.new(0, 10, 0, 30)
+	tooltipText.BackgroundTransparency = 1
+	tooltipText.Text = module.Tooltip
+	tooltipText.TextColor3 = Color3.fromRGB(200,200,200)
+	tooltipText.TextWrapped = true
+	tooltipText.Font = Enum.Font.Gotham
+	tooltipText.TextSize = 13
+	tooltipText.Parent = tooltipGui
+
+	local close = Instance.new("TextButton")
+	close.Size = UDim2.new(0, 20, 0, 20)
+	close.Position = UDim2.new(0, 5, 0, 5)
+	close.BackgroundColor3 = Color3.fromRGB(200,50,50)
+	close.Text = "X"
+	close.TextColor3 = Color3.fromRGB(255,255,255)
+	close.Font = Enum.Font.GothamBold
+	close.TextSize = 12
+	close.Parent = tooltipGui
+
+	-- toggle logic
+	local function update()
+		if module.Mode == "Toggle" then
+			module.Enabled = not module.Enabled
+
+			toggle.BackgroundColor3 =
+				module.Enabled and Color3.fromRGB(255,255,255)
+				or Color3.fromRGB(180,180,180)
+
+			module.Callback(module.Enabled)
+		else
+			module.Callback()
+			module.Enabled = false
+		end
+	end
+
+	toggle.MouseButton1Click:Connect(update)
+
+	-- tooltip open
+	info.MouseButton1Click:Connect(function()
+		tooltipGui.Visible = true
+	end)
+
+	close.MouseButton1Click:Connect(function()
+		tooltipGui.Visible = false
+	end)
+
+	-- draggable tooltip
+	local UIS = game:GetService("UserInputService")
+	local dragging, startPos, dragStart
+
+	tooltipGui.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			dragStart = input.Position
+			startPos = tooltipGui.Position
+		end
+	end)
+
+	UIS.InputChanged:Connect(function(input)
+		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+			local delta = input.Position - dragStart
+			tooltipGui.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		end
+	end)
+
+	table.insert(modules, module)
+
+	return module
+end
+
+-- MODULES
+
+CreateModule({
+	Name = "Test Module",
+	Tooltip = "prints hi in output",
+	Mode = "Button",
+	Callback = function()
+		print("hi")
+	end
+})
