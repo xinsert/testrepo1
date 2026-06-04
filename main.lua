@@ -115,7 +115,6 @@ end
 
 -- TAB FRAME CREATOR
 local function CreateTabFrame(name)
-	local isOpen = false
 	local frame = Instance.new("Frame")
 	frame.Size = UDim2.new(0,180,0,30)
 	frame.Position = UDim2.new(0,220,0,80)
